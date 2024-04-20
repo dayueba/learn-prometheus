@@ -1,0 +1,56 @@
+version: '3'
+services:
+  prometheus:
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+    image: prom/prometheus
+    user: 'root'
+    deploy:
+      resources:
+        limits: 
+          cpus: '0.50'
+          memory: 200M
+    restart: always
+    volumes:
+      - ./prometheus_data:/prometheus_data:rw
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./targets.json:/etc/prometheus/targets.json
+      - ./rules.yml:/etc/prometheus/rules.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - '--storage.tsdb.path=/prometheus_data'
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention=24h' # 保留时间,默认为15天
+      - '--web.enable-lifecycle' # 可以热更新配置
+      - '--storage.tsdb.retention.size=512MB' # 最多保存的数据大小
+    ports:
+      - '9090:9090'
+    networks:
+      - my-overlay-network
+  alertmanager:
+    image: prom/alertmanager
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '50m'
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    ports:
+      - '9093:9093'
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+    networks:
+      - my-overlay-network
+  service-a:
+    image: servce-a:v1.0
+    networks:
+      - my-overlay-network
+    ports:
+      - '7002:7002'
+    deploy:
+      replicas: 3
+networks:
+  my-overlay-network:
+    external: true
