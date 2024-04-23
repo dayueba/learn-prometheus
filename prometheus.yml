@@ -2,11 +2,11 @@ global:
   scrape_interval: 15s # 抓取频率，默认1分钟
   evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
 scrape_configs:
-  - job_name: 'node'
-    file_sd_configs:
-      - refresh_interval: 1m
-        files:
-          - '/etc/prometheus/targets.json'
+#  - job_name: 'midway_project'
+#    file_sd_configs:
+#      - refresh_interval: 1m
+#        files:
+#          - '/etc/prometheus/targets.json'
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
@@ -19,11 +19,15 @@ scrape_configs:
   #     - source_labels: [__meta_dockerswarm_task_desired_state]
   #       regex: running
   #       action: keep
+  - job_name: "node_export"
+    static_configs:
+      - targets: ["node_exporter:9100"]
+
 
 alerting:
   alertmanagers:
     - static_configs:
-      - targets: ["alertmanager.prom.orb.local:9093"]
+      - targets: ["alertmanager:9093"]
       # - targets: ["myapp_alertmanager:9093"]
 rule_files:
     - /etc/prometheus/rules.yml
