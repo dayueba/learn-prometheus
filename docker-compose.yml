@@ -30,7 +30,10 @@ services:
       - '9093:9093'
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
-
+  pushgateway:
+    image: prom/pushgateway
+    ports:
+      - '9091:9091'
   node_exporter:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node_exporter
@@ -54,3 +57,9 @@ services:
       ports:
         - "3000:3000"
 
+#  midwayjs_project:
+#    scale: 3
+#    build:
+#      context: ./midwayjs-project
+#    ports:
+#      - '7002:7002'
