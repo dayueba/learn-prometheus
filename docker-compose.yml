@@ -57,9 +57,9 @@ services:
       ports:
         - "3000:3000"
 
-#  midwayjs_project:
-#    scale: 3
-#    build:
-#      context: ./midwayjs-project
+  midwayjs_project:
+    scale: 3
+    build:
+      context: ./midwayjs-project
 #    ports:
 #      - '7002:7002'

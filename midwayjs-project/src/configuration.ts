@@ -8,7 +8,8 @@ import { join } from 'path';
 import { ReportMiddleware } from './middleware/report.middleware';
 import * as prometheus from '@midwayjs/prometheus';
 const client = require('prom-client');
-let gateway = new client.Pushgateway('http://127.0.0.1:9091');
+// let gateway = new client.Pushgateway('http://127.0.0.1:9091');
+const gateway = new client.Pushgateway('http://pushgateway:9091');
 const os = require('os');
 
 @Configuration({
@@ -34,7 +35,9 @@ export class MainConfiguration implements ILifeCycle{
     // this.app.useFilter([NotFoundFilter, DefaultErrorFilter]);
 
     setInterval(() => {
-      gateway.push({ jobName: os.hostname() })
+      gateway.push({ jobName: os.hostname(), groupings: {
+        'instance': os.hostname() // 重要
+        } })
         .then(({resp, body}) => {
           console.log('push success')
         })
